@@ -55,7 +55,7 @@ class Order < ApplicationRecord
 
   def validate_store
 
-    permitted_types = %w(admin restaurant)
+    permitted_types = %w(admin store)
 
     unless permitted_types.include? store.user_type
       errors.add :store, "must be of types [#{permitted_types.join(', ')}]"
