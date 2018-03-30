@@ -8,6 +8,10 @@ class User < ApplicationRecord
   has_many :courier_orders, class_name: 'Order', foreign_key: :courier_id, dependent: :destroy
   has_many :payments, class_name: 'Transaction', foreign_key: :creditor_id, dependent: :destroy
   has_many :earnings, class_name: 'Transaction', foreign_key: :debtor_id, dependent: :destroy
+  has_many :courier_teams, class_name: 'Team', foreign_key: :store_id, dependent: :destroy
+  has_many :couriers, through: :courier_teams
+  has_one :store_team, class_name: 'Team', foreign_key: :courier_id, dependent: :destroy
+  has_one :store, through: :store_team
 
   validates :first_name, :last_name, :address, :phone, presence: true
   validates :balance, numericality: true
