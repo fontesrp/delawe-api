@@ -32,6 +32,14 @@ class User < ApplicationRecord
 
   after_create :create_opening_balance
 
+  def last_order
+    if user_type == 'courier'
+      courier_orders.order(created_at: :desc).first
+    else
+      store_orders.order(created_at: :desc).first
+    end
+  end
+
   private
 
   def validate_business
