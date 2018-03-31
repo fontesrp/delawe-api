@@ -8,7 +8,7 @@ class ApplicationController < ActionController::API
 
   def current_user
 
-    token = request.headers["AUTHORIZATION"]
+    token = request.headers['AUTHORIZATION']
 
     begin
 
@@ -17,7 +17,7 @@ class ApplicationController < ActionController::API
         Rails.application.secrets.secret_key_base
       )&.first
 
-      @user ||= User.find_by_id payload["id"]
+      @user ||= User.find_by_id payload['id']
 
     rescue JWT::DecodeError => error
       nil
