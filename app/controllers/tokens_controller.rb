@@ -10,7 +10,7 @@ class TokensController < ApplicationController
             id: user.id,
             first_name: user.first_name,
             last_name: user.last_name,
-            full_name: user.full_name
+            email: user.email
         })
       }
     else
