@@ -8,7 +8,7 @@ class UsersController < ApplicationController
   end
 
   def update
-    if @target_user.update update_params
+    if @target_user.update @update_params
       render json: @target_user.attributes.except('password_digest')
     else
       render json: { errors: @target_user.errors.full_messages }
@@ -23,8 +23,10 @@ class UsersController < ApplicationController
 
     if current_user.id == user_id
       @target_user = current_user
+      @update_params = user_params
     elsif current_user.user_type == 'admin'
       @target_user = User.find user_id
+      @update_params = admin_params
     else
       head :unauthorized
     end
