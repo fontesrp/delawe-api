@@ -1,15 +1,13 @@
 class TeamsController < ApplicationController
 
+  before_action :authenticate_user!
+
   def index
 
-    user_id = params[:user_id].to_i
-
-    if current_user.id == user_id
-      user = current_user
-    elsif current_user.user_type == 'admin'
-      user = User.find user_id
+    if current_user.user_type == 'admin' && params[:user_id].present?
+      user = User.find params[:user_id]
     else
-      return head :unauthorized
+      user = current_user
     end
 
     couriers = user
