@@ -10,15 +10,16 @@ class TeamsController < ApplicationController
       .near [@target_user.latitude, @target_user.longitude], 1000, units: :km
 
     props = couriers.map do |cour|
-      {
-        id: cour.id,
-        first_name: cour.first_name,
-        last_name: cour.last_name,
-        latitude: cour.latitude,
-        longitude: cour.longitude,
-        distance: cour.distance,
-        last_pickup: cour.last_order&.created_at
-      }
+      cour_props = cour.attributes.extract!(
+        'id',
+        'first_name',
+        'last_name',
+        'latitude',
+        'longitude',
+        'distance'
+      )
+      cour_props['last_pickup'] = cour.last_order&.created_at
+      cour_props
     end
 
     render json: props
