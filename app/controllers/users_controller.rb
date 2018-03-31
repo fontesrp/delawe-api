@@ -4,11 +4,16 @@ class UsersController < ApplicationController
   before_action :set_user_id
 
   def show
+
     if current_user.id == @user_id
-      render json: current_user.attributes.except('password_digest')
+      user = current_user
+    elsif current_user.user_type == 'admin'
+      user = User.find @user_id
     else
-      head :unauthorized
+      return head :unauthorized
     end
+
+    render json: user.attributes.except('password_digest')
   end
 
   def update
