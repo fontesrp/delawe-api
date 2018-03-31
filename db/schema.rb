@@ -17,8 +17,8 @@ ActiveRecord::Schema.define(version: 20180330223432) do
 
   create_table "orders", force: :cascade do |t|
     t.string "address"
-    t.string "latitude"
-    t.string "longitude"
+    t.float "latitude"
+    t.float "longitude"
     t.string "aasm_state"
     t.float "value"
     t.bigint "store_id"
