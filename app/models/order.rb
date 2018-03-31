@@ -18,7 +18,7 @@ class Order < ApplicationRecord
 
   include AASM
 
-  aasm do
+  aasm whiny_transitions: false do
 
     state :pending, initial: true
     state :assigned
