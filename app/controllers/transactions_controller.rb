@@ -8,7 +8,7 @@ class TransactionsController < ApplicationController
     transactions = [];
 
     @target_user.payments.each do |trx|
-      props = trx.attributes.extract!('created_at', 'order_id', 'amount')
+      props = trx.attributes.extract! 'created_at', 'order_id', 'amount'
       props['amount'] *= -1
       transactions << props
     end
