@@ -4,10 +4,14 @@ class User < ApplicationRecord
 
   before_validation :set_balance
 
-  has_many :restaurant_orders, class_name: 'Order', foreign_key: :store_id, dependent: :destroy
+  has_many :store_orders, class_name: 'Order', foreign_key: :store_id, dependent: :destroy
   has_many :courier_orders, class_name: 'Order', foreign_key: :courier_id, dependent: :destroy
   has_many :payments, class_name: 'Transaction', foreign_key: :creditor_id, dependent: :destroy
   has_many :earnings, class_name: 'Transaction', foreign_key: :debtor_id, dependent: :destroy
+  has_many :courier_teams, class_name: 'Team', foreign_key: :store_id, dependent: :destroy
+  has_many :couriers, through: :courier_teams
+  has_one :store_team, class_name: 'Team', foreign_key: :courier_id, dependent: :destroy
+  has_one :store, through: :store_team
 
   validates :first_name, :last_name, :address, :phone, presence: true
   validates :balance, numericality: true
@@ -16,7 +20,7 @@ class User < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true, format: VALID_EMAIL_REGEX
 
-  TYPES = %w(admin restaurant courier)
+  TYPES = %w(admin store courier)
 
   validates :user_type, inclusion: { in: TYPES }
 
@@ -28,11 +32,19 @@ class User < ApplicationRecord
 
   after_create :create_opening_balance
 
+  def last_order
+    if user_type == 'courier'
+      courier_orders.order(created_at: :desc).first
+    else
+      store_orders.order(created_at: :desc).first
+    end
+  end
+
   private
 
   def validate_business
-    if user_type == 'restaurant' && !business_name.present?
-      errors.add :business_name, 'Restaurants must have a business name'
+    if user_type == 'store' && !business_name.present?
+      errors.add :business_name, 'must be present for stores'
     end
   end
 

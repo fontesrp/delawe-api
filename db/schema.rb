@@ -10,15 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180330183303) do
+ActiveRecord::Schema.define(version: 20180330223432) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "orders", force: :cascade do |t|
     t.string "address"
-    t.string "latitude"
-    t.string "longitude"
+    t.float "latitude"
+    t.float "longitude"
     t.string "aasm_state"
     t.float "value"
     t.bigint "store_id"
@@ -27,6 +27,15 @@ ActiveRecord::Schema.define(version: 20180330183303) do
     t.datetime "updated_at", null: false
     t.index ["courier_id"], name: "index_orders_on_courier_id"
     t.index ["store_id"], name: "index_orders_on_store_id"
+  end
+
+  create_table "teams", force: :cascade do |t|
+    t.bigint "store_id"
+    t.bigint "courier_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["courier_id"], name: "index_teams_on_courier_id"
+    t.index ["store_id"], name: "index_teams_on_store_id"
   end
 
   create_table "transactions", force: :cascade do |t|
@@ -60,6 +69,8 @@ ActiveRecord::Schema.define(version: 20180330183303) do
 
   add_foreign_key "orders", "users", column: "courier_id"
   add_foreign_key "orders", "users", column: "store_id"
+  add_foreign_key "teams", "users", column: "courier_id"
+  add_foreign_key "teams", "users", column: "store_id"
   add_foreign_key "transactions", "orders"
   add_foreign_key "transactions", "users", column: "creditor_id"
   add_foreign_key "transactions", "users", column: "debtor_id"
