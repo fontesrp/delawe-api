@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
 
   before_action :authenticate_user!
-  before_action :set_user_id, except: :index
+  before_action :set_user_id
 
   def show
     if current_user.id == @user_id
@@ -9,31 +9,6 @@ class UsersController < ApplicationController
     else
       head :unauthorized
     end
-  end
-
-  def index
-
-    if current_user.user_type == 'courier'
-      return head :unauthorized
-    end
-
-    couriers = current_user
-      .couriers
-      .near([current_user.latitude, current_user.longitude], 1000, units: :km)
-
-    props = couriers.map do |cour|
-      {
-        id: cour.id,
-        first_name: cour.first_name,
-        last_name: cour.last_name,
-        latitude: cour.latitude,
-        longitude: cour.longitude,
-        distance: cour.distance,
-        last_pickup: cour.last_order&.created_at
-      }
-    end
-
-    render json: props
   end
 
   def update
