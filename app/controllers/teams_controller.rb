@@ -1,18 +1,13 @@
 class TeamsController < ApplicationController
 
   before_action :authenticate_user!
+  before_action :set_target_user
 
   def index
 
-    if current_user.user_type == 'admin' && params[:user_id].present?
-      user = User.find params[:user_id]
-    else
-      user = current_user
-    end
-
-    couriers = user
+    couriers = @target_user
       .couriers
-      .near [user.latitude, user.longitude], 1000, units: :km
+      .near [@target_user.latitude, @target_user.longitude], 1000, units: :km
 
     props = couriers.map do |cour|
       {
@@ -27,5 +22,15 @@ class TeamsController < ApplicationController
     end
 
     render json: props
+  end
+
+  private
+
+  def set_target_user
+    if current_user.user_type == 'admin' && params[:user_id].present?
+      @target_user = User.find params[:user_id]
+    else
+      @target_user = current_user
+    end
   end
 end
