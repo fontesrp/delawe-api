@@ -27,10 +27,12 @@ class OrdersController < ApplicationController
 
   def create
 
-    store = User.find params[:store_id]
+    if @target_user.user_type != 'store'
+      head :unauthorized
+    end
 
     @order = Order.new order_params
-    @order.store = store
+    @order.store = @target_user
 
     if !@order.save
       render json: { errors: @order.errors.full_messages }
