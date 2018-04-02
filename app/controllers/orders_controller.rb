@@ -55,7 +55,7 @@ class OrdersController < ApplicationController
       @target_user != @order.store
     )
       head :unauthorized
-    elsif !@order.update order_params
+    elsif params[:order].present? && !@order.update(order_params)
       render json: { errors: @order.errors.full_messages }
     elsif !action.present?
       render json: @order
