@@ -5,21 +5,31 @@ class TeamsController < ApplicationController
 
   def index
 
-    couriers = @target_user
-      .couriers
-      .near [@target_user.latitude, @target_user.longitude], 1000, units: :km
-
-    props = couriers.map do |cour|
-      cour_props = cour.attributes.extract!(
-        'id',
-        'first_name',
-        'last_name',
+    if @target_user.user_type == 'courier'
+      props = @target_user.store.attributes.extract!(
+        'business_name',
+        'address',
         'latitude',
-        'longitude',
-        'distance'
+        'longitude'
       )
-      cour_props['last_pickup'] = cour.last_order&.created_at
-      cour_props
+    else
+
+      couriers = @target_user
+        .couriers
+        .near [@target_user.latitude, @target_user.longitude], 1000, units: :km
+
+      props = couriers.map do |cour|
+        cour_props = cour.attributes.extract!(
+          'id',
+          'first_name',
+          'last_name',
+          'latitude',
+          'longitude',
+          'distance'
+        )
+        cour_props['last_pickup'] = cour.last_order&.created_at
+        cour_props
+      end
     end
 
     render json: props
