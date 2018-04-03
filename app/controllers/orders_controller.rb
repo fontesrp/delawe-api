@@ -105,10 +105,15 @@ class OrdersController < ApplicationController
 
   def broadcast
 
-    ActionCable.server.broadcast "orders_user_#{@order.store.id}", @order
+    order = Order
+      .where(id: @order.id)
+      .near([@target_user.latitude, @target_user.longitude], 1000, units: :km)
+      .first
 
-    if @order.courier.present?
-      ActionCable.server.broadcast "orders_user_#{@order.courier.id}", @order
+    ActionCable.server.broadcast "orders_user_#{@order.store.id}", order
+
+    if order.courier.present?
+      ActionCable.server.broadcast "orders_user_#{@order.courier.id}", order
     end
   end
 
