@@ -37,6 +37,7 @@ class OrdersController < ApplicationController
     if !@order.save
       render json: { errors: @order.errors.full_messages }
     elsif !params[:courier_id].present?
+      broadcast
       render json: @order
     else
       set_courier
@@ -58,6 +59,7 @@ class OrdersController < ApplicationController
     elsif params[:order].present? && !@order.update(order_params)
       render json: { errors: @order.errors.full_messages }
     elsif !action.present?
+      broadcast
       render json: @order
     else
       case action
@@ -94,9 +96,19 @@ class OrdersController < ApplicationController
 
   def perform_order_action(action)
     if @order.method(action).call
+      broadcast
       render json: @order
     else
       render json: { errors: @order.errors.full_messages }
+    end
+  end
+
+  def broadcast
+
+    ActionCable.server.broadcast "orders_user_#{@order.store.id}", @order
+
+    if @order.courier.present?
+      ActionCable.server.broadcast "orders_user_#{@order.courier.id}", @order
     end
   end
 

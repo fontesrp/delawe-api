@@ -36,6 +36,16 @@ class TransactionsController < ApplicationController
     end
 
     if trx.save
+
+      props = {
+        created_at: trx.created_at,
+        order_id: trx.order_id,
+        amount: (transaction_type == 'add_credit') ? trx.amount : (-1) * trx.amount
+      }
+
+      ActionCable.server.broadcast "transactions_user_#{trx.creditor.id}", props
+      ActionCable.server.broadcast "transactions_user_#{trx.debtor.id}", props
+
       render json: trx
     else
       render json: { errors: trx.errors.full_messages }
