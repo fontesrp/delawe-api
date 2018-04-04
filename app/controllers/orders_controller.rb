@@ -95,25 +95,33 @@ class OrdersController < ApplicationController
   end
 
   def perform_order_action(action)
+    prev_aasm_state = @order.aasm_state
     if @order.method(action).call
-      broadcast
+      broadcast action, prev_aasm_state
       render json: @order
     else
       render json: { errors: @order.errors.full_messages }
     end
   end
 
-  def broadcast
+  def broadcast(action = nil, prev_aasm_state = nil)
 
     order = Order
       .where(id: @order.id)
       .near([@target_user.latitude, @target_user.longitude], 1000, units: :km)
       .first
 
-    ActionCable.server.broadcast "orders_user_#{@order.store.id}", order
+    props = order.attributes
+
+    unless action.nil?
+      props['action'] = action
+      props['prev_aasm_state'] = prev_aasm_state
+    end
+
+    ActionCable.server.broadcast "orders_user_#{@order.store.id}", props
 
     if order.courier.present?
-      ActionCable.server.broadcast "orders_user_#{@order.courier.id}", order
+      ActionCable.server.broadcast "orders_user_#{@order.courier.id}", props
     end
   end
 
