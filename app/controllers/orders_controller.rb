@@ -37,6 +37,7 @@ class OrdersController < ApplicationController
     if !@order.save
       render json: { errors: @order.errors.full_messages }
     elsif !params[:courier_id].present?
+      broadcast
       render json: @order
     else
       set_courier
@@ -55,9 +56,10 @@ class OrdersController < ApplicationController
       @target_user != @order.store
     )
       head :unauthorized
-    elsif !@order.update order_params
+    elsif params[:order].present? && !@order.update(order_params)
       render json: { errors: @order.errors.full_messages }
     elsif !action.present?
+      broadcast
       render json: @order
     else
       case action
@@ -93,10 +95,33 @@ class OrdersController < ApplicationController
   end
 
   def perform_order_action(action)
+    prev_aasm_state = @order.aasm_state
     if @order.method(action).call
+      broadcast action, prev_aasm_state
       render json: @order
     else
       render json: { errors: @order.errors.full_messages }
+    end
+  end
+
+  def broadcast(action = nil, prev_aasm_state = nil)
+
+    order = Order
+      .where(id: @order.id)
+      .near([@target_user.latitude, @target_user.longitude], 1000, units: :km)
+      .first
+
+    props = order.attributes
+
+    unless action.nil?
+      props['action'] = action
+      props['prev_aasm_state'] = prev_aasm_state
+    end
+
+    ActionCable.server.broadcast "orders_user_#{@order.store.id}", props
+
+    if order.courier.present?
+      ActionCable.server.broadcast "orders_user_#{@order.courier.id}", props
     end
   end
 
