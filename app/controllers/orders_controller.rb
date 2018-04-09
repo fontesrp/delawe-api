@@ -13,7 +13,7 @@ class OrdersController < ApplicationController
 
     orders = Order
       .where(filter)
-      .near [@target_user.latitude, @target_user.longitude], 1000, units: :km
+      .near [@target_user.latitude, @target_user.longitude], 20038, units: :km
 
     props = orders.map do |order|
       att = order.attributes
@@ -108,7 +108,7 @@ class OrdersController < ApplicationController
 
     order = Order
       .where(id: @order.id)
-      .near([@target_user.latitude, @target_user.longitude], 1000, units: :km)
+      .near([@target_user.latitude, @target_user.longitude], 20038, units: :km)
       .first
 
     props = order.attributes

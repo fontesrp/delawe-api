@@ -16,7 +16,7 @@ class TeamsController < ApplicationController
 
       couriers = @target_user
         .couriers
-        .near [@target_user.latitude, @target_user.longitude], 1000, units: :km
+        .near [@target_user.latitude, @target_user.longitude], 20038, units: :km
 
       props = couriers.map do |cour|
         cour_props = cour.attributes.extract!(
