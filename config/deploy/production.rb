@@ -4,7 +4,7 @@
 # You can define all roles on a single server, or split them:
 
 # server "example.com", user: "deploy", roles: %w{app db web}, my_property: :my_value
-server "18.217.229.150", user: "ubuntu", roles: %w{app db web}
+server "delawe.rfapps.co", user: "ubuntu", roles: %w{app db web}
 # server "#{ENV['RDS_HOSTNAME']}:#{ENV['RDS_PORT']}", user: ENV['RDS_USERNAME'], roles: %w{db}
 
 
