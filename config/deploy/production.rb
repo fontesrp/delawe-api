@@ -4,8 +4,8 @@
 # You can define all roles on a single server, or split them:
 
 # server "example.com", user: "deploy", roles: %w{app db web}, my_property: :my_value
-server "18.217.63.151", user: "ubuntu", roles: %w{app web}
-server "#{ENV['RDS_HOSTNAME']}:${ENV['RDS_PORT']}", user: ENV['RDS_USERNAME'], roles: %w{db}
+server "18.217.229.150", user: "ubuntu", roles: %w{app db web}
+# server "#{ENV['RDS_HOSTNAME']}:#{ENV['RDS_PORT']}", user: ENV['RDS_USERNAME'], roles: %w{db}
 
 
 
@@ -41,11 +41,9 @@ server "#{ENV['RDS_HOSTNAME']}:${ENV['RDS_PORT']}", user: ENV['RDS_USERNAME'], r
 #
 # Global options
 # --------------
-#  set :ssh_options, {
-#    keys: %w(/home/rlisowski/.ssh/id_rsa),
-#    forward_agent: false,
-#    auth_methods: %w(password)
-#  }
+set :ssh_options, {
+  keys: %w(/Users/rfontes/.ssh/rfapps.pem)
+}
 #
 # The server-based syntax can be used to override options:
 # ------------------------------------
