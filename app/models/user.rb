@@ -26,9 +26,9 @@ class User < ApplicationRecord
 
   validate :validate_business
 
-  geocoded_by :address, if: :perform_geocoding?
+  geocoded_by :address
 
-  after_validation :geocode
+  after_validation :geocode, if: :perform_geocoding?
 
   after_create :create_opening_balance
 
