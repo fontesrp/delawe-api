@@ -10,7 +10,14 @@ class UsersController < ApplicationController
   def update
 
     if @target_user.update @update_params
-      render json: @target_user.attributes.except('password_digest')
+
+      props = @target_user.attributes.except('password_digest')
+
+      if @target_user.store.present?
+        ActionCable.server.broadcast "couriers_store_#{@target_user.store.id}", props
+      end
+
+      render json: props
     else
       render json: { errors: @target_user.errors.full_messages }
     end
