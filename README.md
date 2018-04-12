@@ -32,5 +32,7 @@ You may need to setup you Google API key to enable the geocoding service. Here i
 $ echo "ENV['GOOGLE_MAPS_API_KEY'] = 'YOUR_API_KEY'" > config/initializers/app_keys.rb
 ```
 
+Run `$ rails db:seed` again to update the locations of the users and orders.
+
 # Licence
 I hope for nothing. I fear nothing. I am free. See the [LICENSE](./LICENSE) file for details.
